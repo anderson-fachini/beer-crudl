@@ -1,12 +1,12 @@
 package com.fachini.beercrudl.controllers;
 
-import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fachini.beercrudl.entities.Beer;
 import com.fachini.beercrudl.payload.UploadFileResponse;
+import com.fachini.beercrudl.repositories.BeerRepository;
 import com.fachini.beercrudl.services.FileStorageService;
 
 import io.swagger.annotations.Api;
@@ -30,10 +32,13 @@ public class FileController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private BeerRepository beerRepository;
+
     @ApiOperation("Upload a file")
     @PostMapping("/uploadFile")
-    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
+    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("beer_id") UUID beerId) {
+        String fileName = fileStorageService.storeFile(file, beerId);
 
         String fileDownloadUri = ServletUriComponentsBuilder//
                 .fromCurrentContextPath().path("/downloadFile/")//
@@ -46,24 +51,20 @@ public class FileController {
     @ApiOperation("Download a file by name")
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
-        // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource(fileName);
+        UUID beerId = UUID.fromString(fileName);
+        Optional<Beer> optBeer = beerRepository.findById(beerId);
 
-        // Try to determine file's content type
-        String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
+        if (optBeer.isPresent()) {
+            // Load file as Resource
+            Resource resource = fileStorageService.loadFileAsResource(fileName);
+
+            String contentType = optBeer.get().getImageType();
+
+            return ResponseEntity.ok()//
+                    .contentType(MediaType.parseMediaType(contentType))//
+                    .body(resource);
         }
 
-        // Fallback to the default content type if type could not be determined
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        }
-
-        return ResponseEntity.ok()//
-                .contentType(MediaType.parseMediaType(contentType))//
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")//
-                .body(resource);
+        return ResponseEntity.notFound().build();
     }
 }

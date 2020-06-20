@@ -6,25 +6,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fachini.beercrudl.exception.FileStorageException;
 import com.fachini.beercrudl.exception.MyFileNotFoundException;
 import com.fachini.beercrudl.property.FileStorageProperties;
+import com.fachini.beercrudl.repositories.BeerRepository;
 
 @Service
 public class FileStorageService {
 
     private final Path fileStorageLocation;
 
+    private final BeerRepository beerRepository;
+
     @Autowired
-    public FileStorageService(FileStorageProperties fileStorageProperties) {
+    public FileStorageService(FileStorageProperties fileStorageProperties, BeerRepository beerRepository) {
+        this.beerRepository = beerRepository;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
 
         try {
@@ -34,10 +40,9 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file) {
-        // Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
+    @Transactional
+    public String storeFile(MultipartFile file, UUID beerId) {
+        String fileName = beerId.toString();
         try {
             // Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
@@ -47,6 +52,8 @@ public class FileStorageService {
             // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            beerRepository.updateImageDefinition(file.getContentType(), beerId);
 
             return fileName;
         } catch (IOException ex) {
