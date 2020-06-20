@@ -1,13 +1,17 @@
 package com.fachini.beercrudl.services;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import com.fachini.beercrudl.entities.Beer;
 import com.fachini.beercrudl.repositories.BeerRepository;
+import com.querydsl.core.types.Predicate;
 
 import lombok.AllArgsConstructor;
 
@@ -17,8 +21,10 @@ public class BeerService {
 
     private final BeerRepository beerRepository;
 
-    public List<Beer> findAll() {
-        return beerRepository.findAll();
+    private final PagedResourcesAssembler<Beer> pagedAssembler;
+
+    public PagedModel<EntityModel<Beer>> findAll(Predicate predicate, Pageable pageable) {
+        return pagedAssembler.toModel(beerRepository.findAll(predicate, pageable));
     }
 
     public Optional<Beer> findById(UUID id) {

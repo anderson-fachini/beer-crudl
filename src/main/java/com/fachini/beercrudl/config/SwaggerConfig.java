@@ -18,7 +18,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class SwaggerConfig {
 
-    @Value("${server.servlet.context-path}")
+    @Value("/")
     private String contextPath;
 
     @Bean
