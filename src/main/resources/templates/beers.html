@@ -28,9 +28,14 @@
 			<div>{{ beer.temperature }}</div>
 			<b>Ingredients:</b>
 			<div>{{ beer.ingredients }}</div>
-			<!-- 
-      <img src="/api/v1/download/{{beer.id}}" alt="Beer image" />
-       -->
+
+			<div v-if="beer.hasImage">
+				<img v-bind:src="'/api/v1/download/' + beer.id" alt="Beer image" />			
+			</div>
+			<div v-else>
+				This beer has not image
+			</div>
+
 			<br /> <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
 			<a>
 				<router-link to="/">Back to beer list</router-link>
@@ -180,6 +185,11 @@
 					<label for="edit-description">Ingredients</label>
 					<textarea class="form-control" id="edit-ingredients" rows="3" v-model="beer.ingredients"></textarea>
 				</div>
+				<div class="form-group">
+					<label for="add-photo">Photo</label>
+					<input class="form-control" id="edit-photo" type="file" />
+				</div>
+
 				<button type="submit" class="btn btn-primary">Save</button>
 				<a class="btn btn-default">
 					<router-link to="/">Cancel</router-link>

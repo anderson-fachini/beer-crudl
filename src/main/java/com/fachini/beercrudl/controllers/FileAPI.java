@@ -39,15 +39,15 @@ public class FileAPI {
 
     @ApiOperation("Upload a file")
     @PostMapping("/uploadFile")
-    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("beer_id") UUID beerId) {
-        String fileName = fileStorageService.storeFile(file, beerId);
+    public UploadFileResponse uploadFile(@RequestParam("photo") MultipartFile photo, @RequestParam("beer_id") UUID beerId) {
+        String fileName = fileStorageService.storeFile(photo, beerId);
 
         String fileDownloadUri = ServletUriComponentsBuilder//
                 .fromCurrentContextPath().path("/downloadFile/")//
                 .path(fileName)//
                 .toUriString();
 
-        return new UploadFileResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
+        return new UploadFileResponse(fileName, fileDownloadUri, photo.getContentType(), photo.getSize());
     }
 
     @ApiOperation("Download a file by name")
