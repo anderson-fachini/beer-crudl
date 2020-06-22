@@ -11,7 +11,7 @@ function findbeer(beerId) {
   let beerKey = findbeerKey(beerId);
 
   if (beerKey == undefined) {
-    beerService.findById(beerId, await function (data) {
+    beerService.findById(beerId, function (data) {
       let beer = data;
       return beer.data;
     });
@@ -29,14 +29,24 @@ function findbeerKey(beerId) {
 }
 
 var beerService = {
-  findAll(fn) {
+  findAll(filter, fn) {
+    let uri = '/api/v1/beers?orderBy=createdAt&size=' + paging.size + '&page=' + paging.page;
+    
+    let props = ['name', 'color', 'temperature', 'ingredients', 'alcoholicStrength'];
+    
+    props.forEach(prop => {
+        if (filter[prop] != undefined) {
+            uri += '&'+prop+'='+filter[prop];
+        } 
+    });
+    
     axios
-      .get('/api/v1/beers?orderBy=createdAt&size=' + paging.size + '&page=' + paging.page)
+      .get(uri)
       .then(response => fn(response))
       .catch(error => console.log(error))
   },
 
-  async findById(id, fn) {
+  findById(id, fn) {
     axios
       .get('/api/v1/beers/' + id)
       .then(response => fn(response))
@@ -102,7 +112,11 @@ var beerService = {
 var List = Vue.extend({
   template: '#beer-list',
   data: function () {
-    return { beers: [], searchKey: '', paging: paging };
+    return { beers: [], //
+    	searchKey: '',  //
+    	paging: paging,  //
+    	filter: {} //
+    	};
   },
   computed: {
     filteredbeers() {
@@ -114,7 +128,9 @@ var List = Vue.extend({
     }
   },
   mounted() {
-    beerService.findAll(r => {
+    let filter = this.filter;
+    
+    beerService.findAll(filter, r => {
       this.beers = r.data._embedded.beers;
       beers = r.data._embedded.beers;
 
@@ -127,6 +143,25 @@ var List = Vue.extend({
       this.paging.showing = r.data._embedded.beers.length;
       paging.showing = r.data._embedded.beers.length;
     })
+  },
+  methods: {
+    filterbeers: function () {
+      let filter = this.filter;
+      
+      beerService.findAll(filter, r => {
+          this.beers = r.data._embedded.beers;
+          beers = r.data._embedded.beers;
+    
+          this.paging.totalElements = r.data.page.totalElements;
+          paging.totalElements = r.data.page.totalElements;
+    
+          this.paging.totalPages = r.data.page.totalPages;
+          paging.totalPages = r.data.page.totalPages;
+    
+          this.paging.showing = r.data._embedded.beers.length;
+          paging.showing = r.data._embedded.beers.length;
+      });
+    }
   }
 });
 
@@ -146,11 +181,6 @@ var beerEdit = Vue.extend({
   methods: {
     updatebeer: function () {
       beerService.update(this.beer.id, this.beer, r => router.push('/'))
-    }
-  },
-  events: {
-    'update_beer': function (data) {
-      this.beer = data;
     }
   }
 });

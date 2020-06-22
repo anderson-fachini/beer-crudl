@@ -47,24 +47,24 @@
 		<div>
 			<div class="filters row">
 				<h2>Filter</h2>
-				<form>
+				<form @submit="filterbeers">
 					<div class="form-group">
 						<label for="filter-name">Name</label>
-						<input class="form-control" id="filter-name" />
+						<input class="form-control" id="filter-name" v-model="filter.name" />
 
-						<label for="filter-color">Name</label>
-						<input class="form-control" id="filter-color" />
+						<label for="filter-color">Color</label>
+						<input class="form-control" id="filter-color" v-model="filter.color" />
 
 						<label for="filter-alcoholicStrength">Alcoholic strength</label>
-						<input class="form-control" type="number" id="filter-alcoholicStrength" />
+						<input class="form-control" type="number" id="filter-alcoholicStrength" v-model="filter.alcoholicStrength" />
 
 						<label for="filter-temperature">Temperature</label>
-						<input class="form-control" type="number" id="filter-temperature" />
+						<input class="form-control" type="number" id="filter-temperature" v-model="filter.temperature" />
 
 						<label for="filter-ingredients">Ingredients</label>
-						<input class="form-control" id="filter-ingredients" />
+						<input class="form-control" id="filter-ingredients" v-model="filter.ingredients" />
 
-						<button type="button" class="btn btn-primary">Filter</button>
+						<button type="submit" class="btn btn-primary">Filter</button>
 						<button type="reset" class="btn btn-secondary">Reset</button>
 					</div>
 				</form>
