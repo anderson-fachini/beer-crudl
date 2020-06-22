@@ -11,29 +11,13 @@ function findbeer(beerId) {
   let beerKey = findbeerKey(beerId);
 
   if (beerKey == undefined) {
-    beerService.findById(beerId, function (data) {
-      //beer = data;
-      this.$emit('update_beer', data);
-      //this.$dispatch('update_beer', data);
+    beerService.findById(beerId, await function (data) {
+      let beer = data;
+      return beer.data;
     });
-
-    return {};
   } else {
     return beers[beerKey];
   }
-
-  /*
-   return new Promise( (resolutionFunc,rejectionFunc) => {
-     let beerKey = findbeerKey(beerId);
-     
-     if (beerKey == undefined) {
-       beerService.findById(beerId, function(data) {
-         resolutionFunc(data);
-       });
-     } else {
-       resolutionFunc(beers[beerKey]);
-     }
-   });*/
 }
 
 function findbeerKey(beerId) {
@@ -52,7 +36,7 @@ var beerService = {
       .catch(error => console.log(error))
   },
 
-  findById(id, fn) {
+  async findById(id, fn) {
     axios
       .get('/api/v1/beers/' + id)
       .then(response => fn(response))
@@ -149,7 +133,8 @@ var List = Vue.extend({
 var beer = Vue.extend({
   template: '#beer',
   data: function () {
-    return { beer: findbeer(this.$route.params.beer_id) };
+    let beer = findbeer(this.$route.params.beer_id);
+    return { beer: beer };
   }
 });
 
