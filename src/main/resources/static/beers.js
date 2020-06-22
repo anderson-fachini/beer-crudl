@@ -1,7 +1,7 @@
 let beers = [];
 let paging = {
   page: 0,
-  size: 50,
+  size: 5,
   totalElements: 0,
   totalPages: 0,
   showing: 0
@@ -109,6 +109,22 @@ var beerService = {
   }
 }
 
+function callFindAll(filter, _this) {
+    beerService.findAll(filter, r => {
+      this.beers = r.data._embedded.beers;
+      beers = r.data._embedded.beers;
+
+      this.paging.totalElements = r.data.page.totalElements;
+      paging.totalElements = r.data.page.totalElements;
+
+      this.paging.totalPages = r.data.page.totalPages;
+      paging.totalPages = r.data.page.totalPages;
+
+      this.paging.showing = r.data._embedded.beers.length;
+      paging.showing = r.data._embedded.beers.length;
+    })
+}
+
 var List = Vue.extend({
   template: '#beer-list',
   data: function () {
@@ -161,8 +177,15 @@ var List = Vue.extend({
           this.paging.showing = r.data._embedded.beers.length;
           paging.showing = r.data._embedded.beers.length;
       });
+    },
+    changepage: function(page) {
+        event.preventDefault();
+        
+        this.paging.page=page-1;
+        this.filterbeers();
     }
   }
+  
 });
 
 var beer = Vue.extend({
@@ -197,7 +220,7 @@ var beerDelete = Vue.extend({
   }
 });
 
-var Addbeer = Vue.extend({
+var addbeer = Vue.extend({
   template: '#add-beer',
   data() {
     return {
@@ -215,7 +238,7 @@ var router = new VueRouter({
   routes: [
     { path: '/', component: List },
     { path: '/beer/:beer_id', component: beer, name: 'beer' },
-    { path: '/add-beer', component: Addbeer },
+    { path: '/add-beer', component: addbeer },
     { path: '/beer/:beer_id/edit', component: beerEdit, name: 'beer-edit' },
     { path: '/beer/:beer_id/delete', component: beerDelete, name: 'beer-delete' }
   ]

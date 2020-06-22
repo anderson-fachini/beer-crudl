@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fachini.beercrudl.entities.Beer;
 import com.fachini.beercrudl.repositories.BeerRepository;
 import com.fachini.beercrudl.services.BeerService;
+import com.fachini.beercrudl.services.FileStorageService;
 import com.querydsl.core.types.Predicate;
 
 import io.swagger.annotations.Api;
@@ -37,6 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 public class BeerAPI {
 
     private final BeerService beerService;
+
+    private final FileStorageService fileStorageService;
 
     @ApiOperation("List all registered beers")
     @GetMapping
@@ -82,6 +85,7 @@ public class BeerAPI {
         }
 
         beerService.deleteById(id);
+        fileStorageService.deleteFile(id);
 
         return ResponseEntity.ok().build();
     }

@@ -11,7 +11,7 @@
 
 <body>
 	<div class="container">
-		<h1>beer CRUD</h1>
+		<h1>Beer Register</h1>
 		<main id="app">
 			<router-view></router-view>
 		</main>
@@ -29,9 +29,14 @@
 			<b>Ingredients:</b>
 			<div>{{ beer.ingredients }}</div>
 
-			<div v-if="beer.hasImage">
-				<img v-bind:src="'/api/v1/download/' + beer.id" alt="Beer image" />			
+			<div class="row" v-if="beer.hasImage">
+			  <div class="col-xs-6 col-md-3">
+			    <a href="#" class="thumbnail">
+			      <img v-bind:src="'/api/v1/downloadFile/' + beer.id" alt="Beer image" />    
+			    </a>
+			  </div>
 			</div>
+	
 			<div v-else>
 				This beer has not image
 			</div>
@@ -76,13 +81,7 @@
 					</router-link>
 				</a>
 			</div>
-			<!-- 
-      <div class="filters row">
-        <div class="form-group col-sm-3">
-          <input placeholder="Search" v-model="searchKey" class="form-control" id="search-element" requred/>
-        </div>
-      </div>
-       -->
+
 			<table class="table">
 				<thead>
 					<tr>
@@ -115,7 +114,23 @@
 					</tr>
 				</tbody>
 			</table>
-			<div>Page {{(paging.page+1)}} of {{paging.totalPages}} | Showing {{paging.showing}} of
+
+			<nav aria-label="Page navigation" v-if="paging.totalPages > 0">
+			  <ul class="pagination">
+			    <li>
+			      <a href="#" aria-label="Previous">
+			        <span aria-hidden="true">&laquo;</span>
+			      </a>
+				</li>
+				<li v-for="n in paging.totalPages"><a href="#" @click="changepage(n)">{{ (n) }}</a></li>
+			    <li>
+			      <a href="#" aria-label="Next">
+			        <span aria-hidden="true">&raquo;</span>
+			      </a>
+			    </li>
+			  </ul>
+			</nav>
+						<div>Page {{(paging.page+1)}} of {{paging.totalPages}} | Showing {{paging.showing}} of
 				{{paging.totalElements}} items</div>
 		</div>
 	</template>
@@ -127,12 +142,12 @@
 			<form @submit="createbeer">
 				<div class="form-group">
 					<label for="add-name">Name</label>
-					<input class="form-control" id="add-name" v-model="beer.name"
+					<input class="form-control" id="add-name" maxlength="50" v-model="beer.name"
 						required />
 				</div>
 				<div class="form-group">
 					<label for="add-color">Color</label>
-					<input class="form-control" id="add-color" v-model="beer.color" required />
+					<input class="form-control" id="add-color" maxlength="50" v-model="beer.color" required />
 				</div>
 				<div class="form-group">
 					<label for="add-alcoholicStrength">Alcoholic strength</label>
@@ -166,11 +181,11 @@
 			<h2>Edit beer</h2>
 			<form @submit="updatebeer">
 				<div class="form-group">
-					<label for="edit-name">Name</label> <input class="form-control" id="edit-name" v-model="beer.name"
+					<label for="edit-name">Name</label> <input class="form-control" id="edit-name" maxlength="50" v-model="beer.name"
 						required />
 				</div>
 				<div class="form-group">
-					<label for="edit-name">Color</label> <input class="form-control" id="edit-color"
+					<label for="edit-name">Color</label> <input class="form-control" maxlength="50" id="edit-color"
 						v-model="beer.color" required />
 				</div>
 				<div class="form-group">

@@ -3,6 +3,7 @@ package com.fachini.beercrudl.services;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -21,6 +22,9 @@ import com.fachini.beercrudl.exception.MyFileNotFoundException;
 import com.fachini.beercrudl.property.FileStorageProperties;
 import com.fachini.beercrudl.repositories.BeerRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class FileStorageService {
 
@@ -36,6 +40,7 @@ public class FileStorageService {
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
+            log.error("Could not create the directory where the uploaded files will be stored.", ex);
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
@@ -57,6 +62,7 @@ public class FileStorageService {
 
             return fileName;
         } catch (IOException ex) {
+            log.error("Could not store file {}. Please try again!", fileName, ex);
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
@@ -72,6 +78,19 @@ public class FileStorageService {
             }
         } catch (MalformedURLException ex) {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
+        }
+    }
+
+    public void deleteFile(UUID beerId) {
+        String fileName = beerId.toString();
+        Path targetLocation = this.fileStorageLocation.resolve(fileName);
+
+        try {
+            Files.delete(targetLocation);
+        } catch (NoSuchFileException e1) {
+            log.error("Could not store file {}. Please try again!", fileName, e1);
+        } catch (IOException e2) {
+            log.error("Error deleting file {}", fileName, e2);
         }
     }
 }
