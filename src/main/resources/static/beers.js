@@ -169,6 +169,14 @@ var List = Vue.extend({
           paging.showing = r.data._embedded.beers.length;
       });
     },
+    resetfilters: function() {
+        this.filter.name = '';
+        this.filter.color = '';
+        this.filter.alcoholicStrength = '';
+        this.filter.temperature = '';
+        this.filter.ingredients = '';
+        this.filterbeers();
+    },
     changepage: function(page) {
         event.preventDefault();
         
