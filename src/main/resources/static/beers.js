@@ -7,16 +7,16 @@ let paging = {
   showing: 0
 };
 
-function findbeer(beerId) {
+
+function findbeer(beerId, fn) {
   let beerKey = findbeerKey(beerId);
 
   if (beerKey == undefined) {
     beerService.findById(beerId, function (data) {
-      let beer = data;
-      return beer.data;
+      fn(data.data);
     });
   } else {
-    return beers[beerKey];
+    fn(beers[beerKey]);
   }
 }
 
@@ -46,11 +46,11 @@ var beerService = {
       .catch(error => console.log(error))
   },
 
-  findById(id, fn) {
+  async findById(id, fn) {
     axios
       .get('/api/v1/beers/' + id)
       .then(response => fn(response))
-      .catch(error => console.log(error))
+      .catch(error => console.log(error));
   },
 
   create(beer, fn) {
@@ -182,15 +182,20 @@ var List = Vue.extend({
 var beer = Vue.extend({
   template: '#beer',
   data: function () {
-    let beer = findbeer(this.$route.params.beer_id);
-    return { beer: beer };
+    findbeer(this.$route.params.beer_id, data => {
+        this.beer = data;
+    });
+    return { beer: this.beer || {} };
   }
 });
 
 var beerEdit = Vue.extend({
   template: '#beer-edit',
   data: function () {
-    return { beer: findbeer(this.$route.params.beer_id) };
+    findbeer(this.$route.params.beer_id, data => {
+        this.beer = data;
+    })
+    return { beer: this.beer || {} };
   },
   methods: {
     updatebeer: function () {
@@ -202,7 +207,10 @@ var beerEdit = Vue.extend({
 var beerDelete = Vue.extend({
   template: '#beer-delete',
   data: function () {
-    return { beer: findbeer(this.$route.params.beer_id) };
+    findbeer(this.$route.params.beer_id, data => {
+        this.beer = data;
+    })
+    return { beer: this.beer || {} };
   },
   methods: {
     deletebeer: function () {
@@ -237,4 +245,4 @@ var router = new VueRouter({
 
 new Vue({
   router
-}).$mount('#app')
+}).$mount('#app');
