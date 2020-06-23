@@ -134,15 +134,6 @@ var List = Vue.extend({
     	filter: {} //
     	};
   },
-  computed: {
-    filteredbeers() {
-      return this.beers.filter((beer) => {
-        return beer.name.indexOf(this.searchKey) > -1
-          || beer.color.indexOf(this.searchKey) > -1
-          || beer.ingredients.toString().indexOf(this.searchKey) > -1
-      })
-    }
-  },
   mounted() {
     let filter = this.filter;
     

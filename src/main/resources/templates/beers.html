@@ -81,6 +81,9 @@
 					</router-link>
 				</a>
 			</div>
+            
+            <h1 class="text-center" v-if="!beers.length">There is not beers registered. Register the first one!</h1>
+            <div v-else>
 
 			<table class="table">
 				<thead>
@@ -94,9 +97,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="beer in filteredbeers">
-						<!-- tr v-for="beer in beers" -->
-						<!-- tr v-for="beer in beers | filterBy searchKey in 'name'" -->
+					<tr v-for="beer in beers">
 						<td><a>
 								<router-link :to="{name: 'beer', params: {beer_id: beer.id}}">{{
 							beer.name }}</router-link>
@@ -130,8 +131,7 @@
 			    </li>
 			  </ul>
 			</nav>
-						<div>Page {{(paging.page+1)}} of {{paging.totalPages}} | Showing {{paging.showing}} of
-				{{paging.totalElements}} items</div>
+			</div>
 		</div>
 	</template>
 
