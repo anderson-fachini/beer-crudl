@@ -40,6 +40,51 @@ function findbeerKey(beerId) {
   }
 }
 
+axios.interceptors.response.use(
+function (response) {
+    return response;
+}, 
+function(error) {
+    // check for errorHandle config
+    if( error.config.hasOwnProperty('errorHandle') && error.config.errorHandle === false ) {
+        return Promise.reject(error);
+    }
+
+    if (error.response) {
+        let notificationType = 'warning';
+        let title = 'Warning';
+        let message = '';
+        
+        if (error.response.status >= 500) {
+            notificationType = 'danger';
+            message = 'It was not possible to process your request due a server error';            
+        } else {
+            if (error.response.data != undefined && error.response.data.messages != undefined) {
+                let messages = error.response.data.messages;
+                
+                for (let i = 0; i < messages.length; i++) {
+                    if (messages.length > 0) {
+                        message += '<br>';
+                    }
+                    message += '- ' + messages[i].message;
+                }
+            } else {
+                message = 'It was not possible to process your request';
+            }
+        }
+        
+        $.notify({
+            title: title,
+            message: message
+        },{
+            type: notificationType,
+            delay: 10 * 1000 // seconds to millis
+        });
+        
+        return Promise.reject(error);
+    }
+});
+
 var beerService = {
   findAll(filter, fn) {
     let uri = '/api/v1/beers?orderBy=createdAt&size=' + paging.size + '&page=' + paging.page;
@@ -87,7 +132,7 @@ var beerService = {
       })
       .then(response => fn(response))
       .catch(error => {
-       console.log(error); 
+        console.log(error); 
        })
   },
 

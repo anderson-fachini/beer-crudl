@@ -41,15 +41,15 @@ public class Beer {
     private UUID id;
 
     @NotNull(message = "{beer.name.null.message}")
-    @Size(max = 50)
+    @Size(max = 50, message = "{beer.name.size.message}")
     private String name;
 
     @NotNull(message = "{beer.description.null.message}")
-    @Size(max = 500)
+    @Size(max = 500, message = "{beer.description.size.message}")
     private String description;
 
     @NotNull(message = "{beer.harmonization.null.message}")
-    @Size(max = 200)
+    @Size(max = 200, message = "{beer.harmonization.size.message}")
     private String harmonization;
 
     @NotNull(message = "{beer.color.null.message}")
@@ -64,7 +64,7 @@ public class Beer {
     private Double temperature;
 
     @NotNull(message = "{beer.ingredients.null.message}")
-    @Size(max = 2000)
+    @Size(max = 2000, message = "{beer.ingredients.size.message}")
     private String ingredients;
 
     @Column(name = "has_image")
