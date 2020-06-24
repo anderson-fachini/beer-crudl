@@ -12,3 +12,5 @@ create table beer (
   created_at timestamp not null,
   updated_at timestamp not null
 );
+
+alter table beer add constraint uk_beer_name unique (name);

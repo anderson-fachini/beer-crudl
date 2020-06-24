@@ -86,7 +86,9 @@ var beerService = {
         }
       })
       .then(response => fn(response))
-      .catch(error => console.log(error))
+      .catch(error => {
+       console.log(error); 
+       })
   },
 
   update(id, beer, fn) {

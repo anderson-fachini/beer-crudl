@@ -9,6 +9,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -26,6 +28,9 @@ import lombok.ToString;
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Table(uniqueConstraints = { //
+        @UniqueConstraint(name = EntityConstraints.UK_BEER_NAME, columnNames = { "name" })//
+})
 public class Beer {
 
     @Id
@@ -35,31 +40,30 @@ public class Beer {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @NotNull
+    @NotNull(message = "{beer.name.null.message}")
     @Size(max = 50)
     private String name;
 
-    @NotNull
+    @NotNull(message = "{beer.description.null.message}")
     @Size(max = 500)
     private String description;
 
-    @NotNull
+    @NotNull(message = "{beer.harmonization.null.message}")
     @Size(max = 200)
     private String harmonization;
 
-    @NotNull
-    @Size(max = 20)
+    @NotNull(message = "{beer.color.null.message}")
     @Enumerated(EnumType.STRING)
     private BeerColor color;
 
-    @NotNull
+    @NotNull(message = "{beer.alcoholilc_strength.null.message}")
     @Column(name = "alcoholic_strength")
     private Double alcoholicStrength;
 
-    @NotNull
+    @NotNull(message = "{beer.temperature.null.message}")
     private Double temperature;
 
-    @NotNull
+    @NotNull(message = "{beer.ingredients.null.message}")
     @Size(max = 2000)
     private String ingredients;
 

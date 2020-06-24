@@ -64,24 +64,35 @@
 			<div class="filters row">
 				<h2>Filter</h2>
 				<form @submit="filterbeers">
-					<div class="form-group">
-						<label for="filter-name">Name</label>
-						<input class="form-control" id="filter-name" v-model="filter.name" />
-
-						<label for="filter-color">Color</label>
-						<input class="form-control" id="filter-color" v-model="filter.color" />
-
-						<label for="filter-alcoholicStrength">Alcoholic strength (% vol)</label>
-						<input class="form-control" type="number" id="filter-alcoholicStrength" v-model="filter.alcoholicStrength" />
-
-						<label for="filter-temperature">Temperature (ºC)</label>
-						<input class="form-control" type="number" id="filter-temperature" v-model="filter.temperature" />
-
-						<label for="filter-ingredients">Ingredients</label>
-						<input class="form-control" id="filter-ingredients" v-model="filter.ingredients" />
-
-						<button type="submit" class="btn btn-primary">Filter</button>
-						<button type="reset" class="btn btn-secondary" @click="resetfilters()">Reset</button>
+					<div class="form-row">
+                        <div class="form-group col-md-4 mb-3">
+							<label for="filter-name">Name</label>
+							<input class="form-control" id="filter-name" v-model="filter.name" />
+						</div>
+						<div class="form-group col-md-4 mb-3">
+							<label for="filter-color">Color</label>
+							<input class="form-control" id="filter-color" v-model="filter.color" />
+						</div>
+                        <div class="form-group col-md-4 mb-3">
+							<label for="filter-alcoholicStrength">Alcoholic strength (% vol)</label>
+							<input class="form-control" type="number" id="filter-alcoholicStrength" v-model="filter.alcoholicStrength" />
+						</div>
+					</div>
+					<div class="form-row clearfix">
+                        <div class="form-group col-md-4 mb-3">
+							<label for="filter-temperature">Temperature (ºC)</label>
+							<input class="form-control" type="number" id="filter-temperature" v-model="filter.temperature" />
+						</div>
+                        <div class="form-group col-md-4 mb-3">
+							<label for="filter-ingredients">Ingredients</label>
+							<input class="form-control" id="filter-ingredients" v-model="filter.ingredients" />
+						</div>
+					</div>
+                    <div class="form-row">
+                        <div class="form-check">
+							<button type="submit" class="btn btn-primary">Filter</button>
+							<button type="reset" class="btn btn-secondary" @click="resetfilters()">Reset</button>
+						</div>
 					</div>
 				</form>
 			</div>

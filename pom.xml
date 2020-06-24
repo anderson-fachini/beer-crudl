@@ -46,6 +46,10 @@
 			<artifactId>querydsl-jpa</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 		</dependency>
@@ -111,11 +115,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-                    <mainClass>com.fachini.beercrudl.BeerCrudlApplication</mainClass>
-                    <image>
-                        <name>fachini/beer-crudl</name>
-                    </image>
-                </configuration>
+					<mainClass>com.fachini.beercrudl.BeerCrudlApplication</mainClass>
+					<image>
+						<name>fachini/beer-crudl</name>
+					</image>
+				</configuration>
 			</plugin>
 
 

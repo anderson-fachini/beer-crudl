@@ -32,6 +32,7 @@ import com.querydsl.core.types.Predicate;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Api(tags = "Beer")
@@ -99,6 +100,19 @@ public class BeerAPI {
     public ResponseEntity<List<BeerColorInfo>> getColorsInfo() {
         List<BeerColorInfo> colorsInfo = Arrays.stream(BeerColor.values()).map(BeerColorInfo::fromBeerColor).collect(Collectors.toList());
         return ResponseEntity.ok(colorsInfo);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    static class BeerColorInfo {
+
+        private String id;
+        private String description;
+        private String hexColor;
+
+        public static BeerColorInfo fromBeerColor(BeerColor beerColor) {
+            return new BeerColorInfo(beerColor.toString(), beerColor.getDescription(), beerColor.getHexColor());
+        }
     }
 
 }
