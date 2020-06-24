@@ -6,7 +6,19 @@ let paging = {
   totalPages: 0,
   showing: 0
 };
+let beerColorsInfo;
 
+if (localStorage.getItem('beerColorsInfo') == undefined) {
+  axios
+    .get('/api/v1/beers/colors-info')
+    .then(function(response) {
+      localStorage.setItem('beerColorsInfo', JSON.stringify(response.data));
+      beerColorsInfo = response.data;
+    })
+    .catch(error => console.log(error));      
+} else {
+    beerColorsInfo = JSON.parse(localStorage.getItem('beerColorsInfo'));
+}
 
 function findbeer(beerId, fn) {
   let beerKey = findbeerKey(beerId);
@@ -125,14 +137,58 @@ function callFindAll(filter, _this) {
     })
 }
 
+function getBeerColorInfoById(colorId) {
+    for (let i= 0; i < beerColorsInfo.length; i++) {
+        let colorInfo = beerColorsInfo[i];
+        
+        if (colorInfo.id == colorId) {
+            return colorInfo;
+        }
+    }
+}
+
+function getBeerColorDescription(colorId) {
+    if (beerColorsInfo == undefined) {
+        return colorId;
+    }
+    
+    if (colorId == undefined) {
+        return '';
+    }
+    
+    return getBeerColorInfoById(colorId).description;
+}
+
+function getBeerColorHexColor(colorId) {
+    if (beerColorsInfo == undefined) {
+        return '';
+    }
+    
+    return '#' + getBeerColorInfoById(colorId).hexColor;
+}
+
+function applyTextWhiteClass(colorId) {
+    let middle = beerColorsInfo.length / 2;
+    
+    for (let i= 0; i < beerColorsInfo.length; i++) {
+        let colorInfo = beerColorsInfo[i];
+        
+        if (colorInfo.id == colorId) {
+            if (i >= middle) {
+                return true;
+            }
+            return false;
+        }
+    }
+}
+
 var List = Vue.extend({
   template: '#beer-list',
   data: function () {
     return { beers: [], //
     	searchKey: '',  //
     	paging: paging,  //
-    	filter: {} //
-    	};
+    	filter: {} };
   },
   mounted() {
     let filter = this.filter;
@@ -182,7 +238,9 @@ var List = Vue.extend({
         
         this.paging.page=page-1;
         this.filterbeers();
-    }
+    },
+    getBeerColorDescription,
+    getBeerColorHexColor
   }
   
 });
@@ -194,6 +252,10 @@ var beer = Vue.extend({
         this.beer = data;
     });
     return { beer: this.beer || {} };
+  },
+  methods: {
+    getBeerColorDescription,
+    getBeerColorHexColor
   }
 });
 
@@ -203,12 +265,16 @@ var beerEdit = Vue.extend({
     findbeer(this.$route.params.beer_id, data => {
         this.beer = data;
     })
-    return { beer: this.beer || {} };
+    return { beer: this.beer || {},
+    beerColorsInfo: beerColorsInfo };
   },
   methods: {
     updatebeer: function () {
       beerService.update(this.beer.id, this.beer, r => router.push('/'))
-    }
+    },
+    getBeerColorDescription,
+    getBeerColorHexColor,
+    applyTextWhiteClass
   }
 });
 
@@ -230,14 +296,17 @@ var beerDelete = Vue.extend({
 var addbeer = Vue.extend({
   template: '#add-beer',
   data() {
-    return {
-      beer: { name: '', description: '', price: 0 }
+    return { beer: {},
+      beerColorsInfo: beerColorsInfo
     }
   },
   methods: {
     createbeer() {
       beerService.create(this.beer, r => router.push('/'))
-    }
+    },
+    getBeerColorDescription,
+    getBeerColorHexColor,
+    applyTextWhiteClass
   }
 });
 

@@ -2,3 +2,11 @@
   margin-bottom: 20px;
   margin-top: 20px;
 }
+.beer-color {
+	width: 30px;
+	display: inline-block;
+	margin-right: 5px;
+}
+.text-white {
+	color: #fff;
+}

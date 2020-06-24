@@ -20,12 +20,23 @@
 	<template id="beer">
 		<div>
 			<h2>{{ beer.name }}</h2>
+			
 			<b>Color: </b>
-			<div>{{ beer.color }}</div>
-			<b>Alcoholic Strength:</b>
+			<div><span class="beer-color" v-bind:style="{ background: getBeerColorHexColor(beer.color)}">&nbsp;</span>
+			{{ getBeerColorDescription(beer.color) }}</div>
+			
+			<b>Description: </b>
+            <div>{{ beer.description }}</div>
+			
+			<b>Harmonization: </b>
+            <div>{{ beer.harmonization }}</div>
+            
+			<b>Alcoholic Strength (% vol):</b>
 			<div>{{ beer.alcoholicStrength }}</div>
-			<b>Temperature:</b>
+			
+			<b>Temperature (ºC):</b>
 			<div>{{ beer.temperature }}</div>
+			
 			<b>Ingredients:</b>
 			<div>{{ beer.ingredients }}</div>
 
@@ -60,10 +71,10 @@
 						<label for="filter-color">Color</label>
 						<input class="form-control" id="filter-color" v-model="filter.color" />
 
-						<label for="filter-alcoholicStrength">Alcoholic strength</label>
+						<label for="filter-alcoholicStrength">Alcoholic strength (% vol)</label>
 						<input class="form-control" type="number" id="filter-alcoholicStrength" v-model="filter.alcoholicStrength" />
 
-						<label for="filter-temperature">Temperature</label>
+						<label for="filter-temperature">Temperature (ºC)</label>
 						<input class="form-control" type="number" id="filter-temperature" v-model="filter.temperature" />
 
 						<label for="filter-ingredients">Ingredients</label>
@@ -90,8 +101,8 @@
 					<tr>
 						<th>Name</th>
 						<th>Color</th>
-						<th class="text-right">Alcoholic Strength</th>
-						<th class="text-right">Temperature</th>
+						<th class="text-right">Alcoholic Strength (% vol)</th>
+						<th class="text-right">Temperature (ºC)</th>
 						<th>Ingredients</th>
 						<th class="col-sm-2">Actions</th>
 					</tr>
@@ -102,7 +113,8 @@
 								<router-link :to="{name: 'beer', params: {beer_id: beer.id}}">{{
 							beer.name }}</router-link>
 							</a></td>
-						<td>{{ beer.color }}</td>
+						<td><span class="beer-color" v-bind:style="{ background: getBeerColorHexColor(beer.color)}">&nbsp;</span>
+						{{ getBeerColorDescription(beer.color) }}</td>
 						<td class="text-right">{{ beer.alcoholicStrength }}</td>
 						<td class="text-right">{{ beer.temperature }}</td>
 						<td>{{ beer.ingredients }}</td>
@@ -146,16 +158,30 @@
 						required />
 				</div>
 				<div class="form-group">
+                    <label for="add-description">Description</label>
+                    <textarea class="form-control" id="add-description" rows="3" v-model="beer.description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="add-harmonization">Harmonization</label>
+                    <textarea class="form-control" id="add-harmonization" rows="3" v-model="beer.harmonization"></textarea>
+                </div>
+				<div class="form-group">
 					<label for="add-color">Color</label>
-					<input class="form-control" id="add-color" maxlength="50" v-model="beer.color" required />
+					<select v-model="beer.color">
+					  <option v-for="beerColorInfo in beerColorsInfo" 
+					    v-bind:value="beerColorInfo.id"
+					    v-bind:style="{ background: getBeerColorHexColor(beerColorInfo.id)}"
+					    v-bind:class="{ 'text-white': applyTextWhiteClass(beerColorInfo.id)}">
+					    {{ getBeerColorDescription(beerColorInfo.id) }}</option>
+					</select>
 				</div>
 				<div class="form-group">
-					<label for="add-alcoholicStrength">Alcoholic strength</label>
-					<input class="form-control" id="add-alcoholicStrength" type="number"
+					<label for="add-alcoholicStrength">Alcoholic strength (% vol)</label>
+					<input class="form-control" id="add-alcoholicStrength" type="number" step="0.1"
 						v-model="beer.alcoholicStrength" required />
 				</div>
 				<div class="form-group">
-					<label for="add-temperature">Temperature</label>
+					<label for="add-temperature">Temperature (ºC)</label>
 					<input class="form-control" id="add-temperature" type="number" v-model="beer.temperature"
 						required />
 				</div>
@@ -185,19 +211,34 @@
 						required />
 				</div>
 				<div class="form-group">
-					<label for="edit-name">Color</label> <input class="form-control" maxlength="50" id="edit-color"
-						v-model="beer.color" required />
+                    <label for="edit-description">Ingredients</label>
+                    <textarea class="form-control" id="edit-ingredients" rows="3" v-model="beer.ingredients"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-description">Description</label>
+                    <textarea class="form-control" id="edit-description" rows="3" v-model="beer.description"></textarea>
+                </div>
+				<div class="form-group">
+                    <label for="edit-harmonization">Harmonization</label>
+                    <textarea class="form-control" id="edit-harmonization" rows="3" v-model="beer.harmonization"></textarea>
+                </div>
+                <select v-model="beer.color">
+                      <option v-for="beerColorInfo in beerColorsInfo" 
+                        v-bind:value="beerColorInfo.id"
+                        v-bind:style="{ background: getBeerColorHexColor(beerColorInfo.id)}"
+                        v-bind:class="{ 'text-white': applyTextWhiteClass(beerColorInfo.id)}">
+                        {{ getBeerColorDescription(beerColorInfo.id) }}</option>
+                    </select>
+				<div class="form-group">
+					<label for="edit-name">Alcoholic strength (% vol)</label> <input class="form-control"
+						id="edit-alcoholicStrenth" type="number" step="0.1" v-model="beer.alcoholicStrength" required />
 				</div>
 				<div class="form-group">
-					<label for="edit-name">Alcoholic strength</label> <input class="form-control"
-						id="edit-alcoholicStrenth" type="number" v-model="beer.alcoholicStrength" required />
-				</div>
-				<div class="form-group">
-					<label for="edit-name">Temperature</label> <input class="form-control" id="edit-temperature"
+					<label for="edit-name">Temperature (ºC)</label> <input class="form-control" id="edit-temperature"
 						type="number" v-model="beer.temperature" required />
 				</div>
 				<div class="form-group">
-					<label for="edit-description">Ingredients</label>
+					<label for="edit-ingredients">Ingredients</label>
 					<textarea class="form-control" id="edit-ingredients" rows="3" v-model="beer.ingredients"></textarea>
 				</div>
 				<div class="form-group">

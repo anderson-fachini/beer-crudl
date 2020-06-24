@@ -1,7 +1,10 @@
 package com.fachini.beercrudl.controllers;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fachini.beercrudl.entities.Beer;
+import com.fachini.beercrudl.entities.BeerColor;
 import com.fachini.beercrudl.repositories.BeerRepository;
 import com.fachini.beercrudl.services.BeerService;
 import com.fachini.beercrudl.services.FileStorageService;
@@ -89,4 +93,12 @@ public class BeerAPI {
 
         return ResponseEntity.ok().build();
     }
+
+    @ApiOperation("Beer colors information")
+    @GetMapping("/colors-info")
+    public ResponseEntity<List<BeerColorInfo>> getColorsInfo() {
+        List<BeerColorInfo> colorsInfo = Arrays.stream(BeerColor.values()).map(BeerColorInfo::fromBeerColor).collect(Collectors.toList());
+        return ResponseEntity.ok(colorsInfo);
+    }
+
 }

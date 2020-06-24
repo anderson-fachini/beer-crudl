@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
@@ -38,8 +40,17 @@ public class Beer {
     private String name;
 
     @NotNull
-    @Size(max = 50)
-    private String color;
+    @Size(max = 500)
+    private String description;
+
+    @NotNull
+    @Size(max = 200)
+    private String harmonization;
+
+    @NotNull
+    @Size(max = 20)
+    @Enumerated(EnumType.STRING)
+    private BeerColor color;
 
     @NotNull
     @Column(name = "alcoholic_strength")
